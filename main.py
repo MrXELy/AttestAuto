@@ -1,34 +1,26 @@
 from adresses import *
 from chrome import *
 from time import sleep
-import argparse
+from sys import argv
 
 GEN_URL = 'https://media.interieur.gouv.fr/deplacement-covid-19/'
 
 # ARGS
-parser = argparse.ArgumentParser()
-parser.add_argument("--robin", action="store_true")
-parser.add_argument("--maman", action="store_true")
-parser.add_argument("--papa", action="store_true")
-parser.add_argument("--dupont", action="store_true")
-
-args = parser.parse_args()
-
 personne = ''
-if args.robin is True:
+if argv[1] == 'robin':
     personne = 'robin'
-elif args.maman is True:
+elif argv[1] == 'maman':
     personne = 'maman'
-elif args.papa is True:
+elif argv[1] == 'papa':
     personne = 'papa'
-elif args.dupont is True:
+elif argv[1] == 'dupont':
     personne = 'dupont'
 else:
-    print('[FAIL] Précisez la personne à attester (--help)')
+    print('[FAIL] Please use "main.py [name]" as stated in adresses.py')
     exit()
 # ARGS END
 
-print('[LOG] Profil sélectionné :', adresses[personne]['prenom'])
+print('[LOG] Profile selected:', adresses[personne]['prenom'], adresses[personne]['nom'])
 
 driver = open_chrome(set_options())
 open_page(driver, GEN_URL)

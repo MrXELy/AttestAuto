@@ -9,6 +9,7 @@ from adresses import adresses
 from time import sleep
 import os
 
+DEFAULT_DL_PATH = r"C:\Users\Robin\Downloads"
 ATTESTATIONS_PATH = './Attestations'
 CHROME_PROFILE_PATH = './CustomProfile'
 
@@ -92,9 +93,9 @@ def fill(driver: webdriver.Chrome, personne):
 
     print('[LOG] Downloading...')
     
-    if download_wait(r"C:\Users\Robin\Downloads") >= 10:
+    if download_wait(DEFAULT_DL_PATH) >= 10:
         print('[FAIL] Download failed : Timeout')
         driver.quit()
         exit()
 
-    print('[SUCESS] File downloaded in', r"C:\Users\Robin\Downloads")
+    print('[SUCESS] File downloaded in your default download folder')
