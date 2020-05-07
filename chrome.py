@@ -14,34 +14,53 @@ ATTESTATIONS_PATH = './Attestations'
 CHROME_PROFILE_PATH = './CustomProfile'
 
 
-def find_file(dir, name):
+def find_file(dir: str, name: str) -> bool:
+    """Return True if name is in dir
+
+    :param dir: Path of a directory
+    :type dir: str
+    :param name: File name
+    :type name: str
+    :return: True or False
+    :rtype: bool
+    """ 
     for fname in os.listdir(dir):
         if fname == name:
             return True
     return False
 
 
-def get_attestation_name(current_time=time.localtime()):
+def get_attestation_name(current_time=time.localtime()) -> str:
+    """Returns name of attestation file created at current_time
+
+    :param current_time: Time attestation is created, defaults to time.localtime()
+    :type current_time: struct_time, optional
+    :return: Name of attestion file as a String
+    :rtype: str
+    """
     return 'attestation-' + time.strftime("%Y-%m-%d_%H-%M", current_time) + '.pdf'
 
 
 def download_wait(path_to_downloads): # From https://stackoverflow.com/a/51949811
     seconds = 0
     dl_wait = True
-    while dl_wait and seconds < 10:
+    while dl_wait and seconds < 20:
         time.sleep(1)
         dl_wait = False
         for fname in os.listdir(path_to_downloads):
             if fname.endswith('.crdownload'):
                 dl_wait = True
-        seconds += 1
+        seconds += 0.5
     return seconds
 
 
 def set_options():
+    """Return chrome options
+
+    :return: Chrome options
+    :rtype: ChromeOptions
+    """
     options = webdriver.ChromeOptions()
-    options.add_argument('--user-data-dir=' + CHROME_PROFILE_PATH)
-    options.add_argument('--profile-directory=Profile 1')
     options.add_argument('--disable-extensions')
     prefs = {"download.default_directory": ATTESTATIONS_PATH, # ! Does not seem to work
              "download.prompt_for_download": False,
@@ -50,19 +69,53 @@ def set_options():
              "safebrowsing.enabled": False
     }
     options.add_experimental_option('prefs', prefs)
+    
+    # DevTools logs
     options.add_experimental_option('excludeSwitches', ['enable-logging'])
+    
+    # Headless arguments
+    options.add_argument('--headless')
+    # options.add_argument('--disable-gpu')
+    options.add_argument('--start-maximized')
+    options.add_argument('--no-sandbox')
+    options.add_argument('--remote-debugging-port=45449')
     
     return options
 
 
+def enable_download_in_headless_chrome(driver, download_dir): # From https://stackoverflow.com/a/47366981
+    # add missing support for chrome "send_command" to selenium webdriver
+    driver.command_executor._commands["send_command"] = ("POST", '/session/$sessionId/chromium/send_command')
+
+    params = {'cmd': 'Page.setDownloadBehavior', 'params': {'behavior': 'allow', 'downloadPath': download_dir}}
+    command_result = driver.execute("send_command", params)
+
+
 def open_chrome(options: webdriver.ChromeOptions):
+    """Open a Google Chrome session, using options
+
+    :param options: Chrome options
+    :type options: webdriver.ChromeOptions
+    :return: Driver
+    :rtype: webdriver
+    """
     print('[LOG] Opening Chrome...')
     driver = webdriver.Chrome(options=options)
     print('[SUCCESS] Chrome opened')
+    
+    enable_download_in_headless_chrome(driver, DEFAULT_DL_PATH)
+    
     return driver
 
 
 def open_page(driver: webdriver.Chrome, URL):
+    """Open a page in a chrome driver
+
+    :param driver: Chrome driver
+    :type driver: webdriver.Chrome
+    :param URL: Page URL
+    :type URL: str
+    """
     print('[LOG] Opening page...')
     driver.get(URL)
     try:
@@ -75,6 +128,15 @@ def open_page(driver: webdriver.Chrome, URL):
         
 
 def fill(driver: webdriver.Chrome, personne):
+    """Fill the attestation form and download it
+
+    :param driver: Chrome driver
+    :type driver: webdriver.Chrome
+    :param personne: Person name
+    :type personne: str
+    :return: Attestation file name
+    :rtype: str
+    """
     print('[LOG] Filling...')
     
     driver.find_element_by_xpath('//*[@id="field-firstname"]').click()
@@ -112,7 +174,9 @@ def fill(driver: webdriver.Chrome, personne):
         pass
 
     print('[LOG] Downloading...')
-        
+    
+    time.sleep(3)
+
     attestation_name = get_attestation_name()
     current_time = time.time()
     

@@ -39,13 +39,13 @@ open_page(driver, GEN_URL)
 
 attestation_name = fill(driver, personne)
 
-send_email(adresses[personne]['email'], DEFAULT_DL_PATH, attestation_name)
+# send_email(adresses[personne]['email'], DEFAULT_DL_PATH, attestation_name) # uncomment to send email
 
 driver.quit()
 
 delete = input('Do you want to delete the local file (y/n): ')
 if delete != 'n':
     os.remove(DEFAULT_DL_PATH + attestation_name)
-    print('[SUCESS] File removed !')
+    print('[SUCCESS] File removed !')
 
 exit()

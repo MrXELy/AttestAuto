@@ -17,6 +17,15 @@ from email.mime.text import MIMEText
 
 
 def send_email(receiver_email, dir_path, filename):
+    """Send an email with a file attached
+
+    :param receiver_email: Email adress to send to
+    :type receiver_email: str
+    :param dir_path: Directory path of the file to attach
+    :type dir_path: str
+    :param filename: File name
+    :type filename: str
+    """
     print('[LOG] Sending email...')
     smtp_server = "smtp.gmail.com"
     port = 587
