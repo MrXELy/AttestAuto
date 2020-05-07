@@ -9,7 +9,7 @@ from adresses import adresses
 import time
 import os
 
-DEFAULT_DL_PATH = r"r"path\to\default\download\folder\\"" # ! Last slash is important
+DEFAULT_DL_PATH = r"path\to\default\download\folder\\" # ! Last slash is important
 ATTESTATIONS_PATH = './Attestations'
 CHROME_PROFILE_PATH = './CustomProfile'
 
