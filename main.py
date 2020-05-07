@@ -1,30 +1,50 @@
-from adresses import *
+try:
+    from adresses import adresses
+except ModuleNotFoundError:
+    print('[FAIL] You need to create adresses.py, please see README.md')
+    exit()
 from chrome import *
-from time import sleep
+import time
 from sys import argv
+from mail import *
 
 GEN_URL = 'https://media.interieur.gouv.fr/deplacement-covid-19/'
 
+def print_adresses():
+    print('[INFO] adresses.py contains:')
+    print('name FirstName LastName')
+    for e in adresses:
+        print(e, adresses[e]['prenom'], adresses[e]['nom'])
+
+
 # ARGS
-personne = ''
-if argv[1] == 'robin':
-    personne = 'robin'
-elif argv[1] == 'maman':
-    personne = 'maman'
-elif argv[1] == 'papa':
-    personne = 'papa'
-elif argv[1] == 'dupont':
-    personne = 'dupont'
-else:
+if len(argv) != 2:
     print('[FAIL] Please use "main.py [name]" as stated in adresses.py')
+    print_adresses()
     exit()
+else:
+    if argv[1] not in adresses:
+        print(f'[FAIL] {argv[1]} not defined. Please use "main.py [name]" as stated in adresses.py')
+        print_adresses()
+        exit()
+    else:
+        personne = argv[1]
 # ARGS END
 
 print('[LOG] Profile selected:', adresses[personne]['prenom'], adresses[personne]['nom'])
 
 driver = open_chrome(set_options())
+
 open_page(driver, GEN_URL)
+
+attestation_name = get_attestation_name()
+current_time = time.time()
 fill(driver, personne)
+if find_file(DEFAULT_DL_PATH, attestation_name) is False:
+    current_time -= 60
+    attestation_name = get_attestation_name(time.localtime(current_time))
+
+send_email(adresses[personne]['email'], DEFAULT_DL_PATH + attestation_name)
 
 driver.quit()
 exit()

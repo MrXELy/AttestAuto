@@ -6,24 +6,37 @@ from selenium.common.exceptions import NoSuchElementException, InvalidArgumentEx
     WebDriverException, ElementNotInteractableException, ElementClickInterceptedException, \
     TimeoutException
 from adresses import adresses
-from time import sleep
+import time
 import os
 
-DEFAULT_DL_PATH = r"C:\Users\Robin\Downloads"
+DEFAULT_DL_PATH = r"r"path\to\default\download\folder\\"" # ! Last slash is important
 ATTESTATIONS_PATH = './Attestations'
 CHROME_PROFILE_PATH = './CustomProfile'
+
+
+def find_file(dir, name):
+    for fname in os.listdir(dir):
+        if fname == name:
+            return True
+    return False
+
+
+def get_attestation_name(current_time=time.localtime()):
+    return 'attestation-' + time.strftime("%Y-%m-%d_%H-%M", current_time) + '.pdf'
+
 
 def download_wait(path_to_downloads): # From https://stackoverflow.com/a/51949811
     seconds = 0
     dl_wait = True
     while dl_wait and seconds < 10:
-        sleep(1)
+        time.sleep(1)
         dl_wait = False
         for fname in os.listdir(path_to_downloads):
             if fname.endswith('.crdownload'):
                 dl_wait = True
         seconds += 1
     return seconds
+
 
 def set_options():
     options = webdriver.ChromeOptions()
