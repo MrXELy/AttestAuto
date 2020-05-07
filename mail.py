@@ -16,7 +16,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 
-def send_email(receiver_email, filename):
+def send_email(receiver_email, dir_path, filename):
     print('[LOG] Sending email...')
     smtp_server = "smtp.gmail.com"
     port = 587
@@ -29,7 +29,7 @@ def send_email(receiver_email, filename):
     message["Subject"] = subject
 
     # Open PDF file in binary mode
-    with open(filename, "rb") as attachment:
+    with open(dir_path + filename, "rb") as attachment:
         # Add file as application/octet-stream
         # Email client can usually download this automatically as attachment
         part = MIMEBase("application", "octet-stream")
@@ -41,7 +41,7 @@ def send_email(receiver_email, filename):
     # Add header as key/value pair to attachment part
     part.add_header(
         "Content-Disposition",
-        f"attachment; filename= attestation.pdf",
+        f"attachment; filename= {filename}",
     )
 
     # Add attachment to message and convert message to string

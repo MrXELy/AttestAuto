@@ -39,7 +39,7 @@ open_page(driver, GEN_URL)
 
 attestation_name = fill(driver, personne)
 
-send_email(adresses[personne]['email'], DEFAULT_DL_PATH + attestation_name)
+send_email(adresses[personne]['email'], DEFAULT_DL_PATH, attestation_name)
 
 driver.quit()
 
