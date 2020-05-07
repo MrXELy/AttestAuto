@@ -4,7 +4,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException, InvalidArgumentException, \
     WebDriverException, ElementNotInteractableException, ElementClickInterceptedException, \
-    TimeoutException
+    TimeoutException, NoAlertPresentException
 from adresses import adresses
 import time
 import os
@@ -104,11 +104,31 @@ def fill(driver: webdriver.Chrome, personne):
     
     driver.find_element_by_xpath('//*[@id="generate-btn"]').click()
 
+    # If there is an alert popup
+    try:
+        alert = driver.switch_to.alert
+        alert.accept()
+    except NoAlertPresentException:
+        pass
+
     print('[LOG] Downloading...')
+        
+    attestation_name = get_attestation_name()
+    current_time = time.time()
     
     if download_wait(DEFAULT_DL_PATH) >= 10:
         print('[FAIL] Download failed : Timeout')
         driver.quit()
         exit()
-
-    print('[SUCESS] File downloaded in your default download folder')
+        
+    if find_file(DEFAULT_DL_PATH, attestation_name) is False:
+        current_time -= 60
+        attestation_name = get_attestation_name(time.localtime(current_time))
+        if find_file(DEFAULT_DL_PATH, attestation_name) is False:
+            print('[FAIL] Download failed: no file')
+            driver.quit()
+            exit()
+    
+    print('[SUCCESS] File downloaded in your default download folder')
+    
+    return attestation_name

@@ -37,14 +37,15 @@ driver = open_chrome(set_options())
 
 open_page(driver, GEN_URL)
 
-attestation_name = get_attestation_name()
-current_time = time.time()
-fill(driver, personne)
-if find_file(DEFAULT_DL_PATH, attestation_name) is False:
-    current_time -= 60
-    attestation_name = get_attestation_name(time.localtime(current_time))
+attestation_name = fill(driver, personne)
 
 send_email(adresses[personne]['email'], DEFAULT_DL_PATH + attestation_name)
 
 driver.quit()
+
+delete = input('Do you want to delete the local file (y/n): ')
+if delete != 'n':
+    os.remove(DEFAULT_DL_PATH + attestation_name)
+    print('[SUCESS] File removed !')
+
 exit()
