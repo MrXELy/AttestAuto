@@ -44,7 +44,7 @@ def get_attestation_name(current_time=time.localtime()) -> str:
 def download_wait(path_to_downloads): # From https://stackoverflow.com/a/51949811
     seconds = 0
     dl_wait = True
-    while dl_wait and seconds < 20:
+    while dl_wait and seconds < 30:
         time.sleep(1)
         dl_wait = False
         for fname in os.listdir(path_to_downloads):
@@ -172,19 +172,19 @@ def fill(driver: webdriver.Chrome, personne):
         alert.accept()
     except NoAlertPresentException:
         pass
-
-    print('[LOG] Downloading...')
     
-    time.sleep(3)
-
     attestation_name = get_attestation_name()
     current_time = time.time()
     
-    if download_wait(DEFAULT_DL_PATH) >= 10:
+    print('[LOG] Downloading...')
+
+    time.sleep(3)
+
+    if download_wait(DEFAULT_DL_PATH) >= 30:
         print('[FAIL] Download failed : Timeout')
         driver.quit()
         exit()
-        
+
     if find_file(DEFAULT_DL_PATH, attestation_name) is False:
         current_time -= 60
         attestation_name = get_attestation_name(time.localtime(current_time))
@@ -192,7 +192,7 @@ def fill(driver: webdriver.Chrome, personne):
             print('[FAIL] Download failed: no file')
             driver.quit()
             exit()
-    
+
     print('[SUCCESS] File downloaded in your default download folder')
-    
+
     return attestation_name
