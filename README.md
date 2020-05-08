@@ -6,12 +6,18 @@ Download from https://media.interieur.gouv.fr/deplacement-covid-19/ into your de
 
 # Running from source
 
+To start the script:
+
+`python main.py`
+
+## Requirements
+
 You need `selenium` and `chromedriver`:
 
  - `pip install selenium`
  - download `chromedriver` [here](https://chromedriver.chromium.org/getting-started) and put in your `PATH`
 
-Create `adresses.py`, it will contains your and your family's adresses in a dictionnary.
+Create `adresses.py`, it will contain you and your family's adresses in a dictionnary.
 ```python
 adresses = dict(
 dad=dict(prenom='Dad First Name',
